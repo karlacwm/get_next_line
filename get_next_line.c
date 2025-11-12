@@ -6,7 +6,7 @@
 /*   By: wcheung <wcheung@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/11/10 11:27:02 by wcheung           #+#    #+#             */
-/*   Updated: 2025/11/11 15:20:52 by wcheung          ###   ########.fr       */
+/*   Updated: 2025/11/12 17:41:00 by wcheung          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,32 +15,67 @@
 // bytes read == 0 end of file, return and free malloc
 // "line one\nline two"
 
-#include <get_next_line.h>
+#include "get_next_line.h"
 
 static char	*leftover = NULL;
+
+char	*extract_line(char *leftover)
+{
+	int		i;
+	char	*line;
+
+	i = 0;
+	if (!leftover)
+		return (NULL);
+	while (leftover[i] && leftover[i] != '\n')
+		i++;
+	if (leftover[i] == '\n')
+		i++;
+	line = (char *)malloc(sizeof(char) * (i + 1));
+	if (!line)
+		return (NULL);
+	ft_memcpy(line, leftover, i);
+	line[i] = '\0';
+	return (line);
+}
+// find length of line till \n or \0 in leftover
+// malloc space and + 1
+// copy line from leftover into str
+// return str
+
+char	*update_leftover(char *str)
+{
+
+}
+// find \n in leftover
+// // free and return NULL when no \n
+// find length after \name
+// malloc space and +1
+// copy from leftover into str
+// free leftover
+// return str
 
 char	*get_next_line(int fd)
 {
 	char	*return_line;
-	char	*read_buffer;
+	char	read_buffer[BUFFER_SIZE + 1];
 	int		bytes_read; // how many bytes we have read
 
 	// loop continues: 1) no new line found in leftover; 2) bytes_read is not 0
-	while ()
+	bytes_read = 1;
+	while (!ft_strchr(leftover, '\n') && bytes_read != 0)
 	{
-		bytes_read = read(fd, read_buffer, size_t BUFFER_SIZE);
+		bytes_read = read(fd, read_buffer, BUFFER_SIZE);
 		if (bytes_read < 0)
 		// if error when reading bytes
 			return ();
+		// add new things read to the leftover, join them, free old one, get new leftover
+		leftover = ft_strjoin(leftover, read_buffer);
 	}
 	read_buffer[bytes_read] = '\0';
-	// add new things read to the leftover, join them, free old one, get new leftover
-	// // join leftover and read_buffer:
-	// create new and bigger string, copy leftover, join read_buffer, return new string
-	leftover = ft_strjoin(leftover, read_buffer);
 
-	// now leftover has a line (or end of file?)
-	if (leftover == NULL || *leftover == '\0') // in case the file was empty or leftover' is empty
+	// now leftover has a line (or end of file)?
+	if (leftover == NULL || *leftover == '\0') // in case file or leftover is empty
 	{
 		return (NULL); // nothing to read
 	}
