@@ -6,7 +6,7 @@
 /*   By: wcheung <wcheung@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/11/10 11:27:02 by wcheung           #+#    #+#             */
-/*   Updated: 2025/11/12 17:55:40 by wcheung          ###   ########.fr       */
+/*   Updated: 2025/11/12 18:34:42 by wcheung          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -44,10 +44,30 @@ char	*extract_line(char *remaining)
 char	*update_remaining(char *remaining)
 {
 	int		i;
-	char	*temp;
+	int		len_to_copy;
+	char	*updated;
 
 	if (!remaining)
 		return (NULL);
+	i = 0;
+	while (remaining[i] && remaining[i] != '\n')
+		i++;
+	if (!remaining[i])
+	{
+		free(remaining);
+		return (NULL);
+	}
+	len_to_copy = ft_strlen(remaining) - i - 1;
+	updated = (char *)malloc(sizeof(char) * (len_to_copy + 1));
+	if (!updated)
+	{
+		free(remaining);
+		return (NULL);
+	}
+	ft_memcpy(updated, remaining + i + 1, len_to_copy);
+	updated[len_to_copy] = '\0';
+	free(remaining);
+	return (updated);
 }
 // find \n in remaining
 // // free and return NULL when no \n
@@ -62,35 +82,33 @@ char	*get_next_line(int fd)
 	static char	*remaining;
 	char		*return_line;
 	char		read_buffer[BUFFER_SIZE + 1];
-	int			bytes_read; // how many bytes we have read
+	int			bytes_read;
 
 	if (fd < 0 || BUFFER_SIZE <= 0)
 		return (NULL);
 	remaining = NULL;
 	bytes_read = 1;
-	// loop continues: 1) no new line found in remaining; 2) bytes_read is not 0
 	while (!ft_strchr(remaining, '\n') && bytes_read != 0)
 	{
 		bytes_read = read(fd, read_buffer, BUFFER_SIZE);
 		if (bytes_read < 0)
-		// if error when reading bytes
 			return ();
-		// add new things read to the remaining, join them, free old one, get new remaining
+
 		remaining = ft_strjoin(remaining, read_buffer);
 	}
 	read_buffer[bytes_read] = '\0';
-
-	// now remaining has a line (or end of file)?
-	if (remaining == NULL || *remaining == '\0') // in case file or remaining is empty
+	if (remaining == NULL || *remaining == '\0')
 	{
 		return (NULL); // nothing to read
 	}
-
-	// finds the first \n in remaining, returns string with until and including \n
 	return_line = (extract_line(remaining));
-
-	// then remove what is returned already from remaining
-	// finds the first '\n' and returns everything after it
 	remaining = update_remaining(remaining);
 	return (return_line);
 }
+// loop continues: 1) no new line found in remaining; 2) bytes_read is not 0
+// add new things read to the remaining, join them, free old one, get new remaining
+// now remaining has a line (or end of file)?
+// in case file or remaining is empty
+// finds the first \n in remaining, returns string with until and including \n
+// then remove what is returned already from remaining
+	// finds the first '\n' and returns everything after it
