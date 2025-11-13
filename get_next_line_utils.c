@@ -6,7 +6,7 @@
 /*   By: wcheung <wcheung@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/11/10 11:27:00 by wcheung           #+#    #+#             */
-/*   Updated: 2025/11/11 17:58:09 by wcheung          ###   ########.fr       */
+/*   Updated: 2025/11/13 12:14:55 by wcheung          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -64,6 +64,5 @@ char	*ft_strjoin(char const *s1, char const *s2)
 	ft_memcpy(str, s1, s1_len);
 	ft_memcpy(str + s1_len, s2, s2_len);
 	str[s1_len + s2_len] = '\0';
-	free(s1); // s1 = leftover
 	return (str);
 }

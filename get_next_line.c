@@ -6,7 +6,7 @@
 /*   By: wcheung <wcheung@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/11/10 11:27:02 by wcheung           #+#    #+#             */
-/*   Updated: 2025/11/12 18:34:42 by wcheung          ###   ########.fr       */
+/*   Updated: 2025/11/13 12:30:08 by wcheung          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -70,8 +70,8 @@ char	*update_remaining(char *remaining)
 	return (updated);
 }
 // find \n in remaining
-// // free and return NULL when no \n
-// find length after \name
+// free and return NULL when no \n
+// find length after \n
 // malloc space and +1
 // copy from remaining into str
 // free remaining
@@ -79,27 +79,31 @@ char	*update_remaining(char *remaining)
 
 char	*get_next_line(int fd)
 {
-	static char	*remaining;
+	static char	*remaining = NULL;
 	char		*return_line;
 	char		read_buffer[BUFFER_SIZE + 1];
 	int			bytes_read;
 
 	if (fd < 0 || BUFFER_SIZE <= 0)
 		return (NULL);
-	remaining = NULL;
 	bytes_read = 1;
-	while (!ft_strchr(remaining, '\n') && bytes_read != 0)
+	while ((!remaining || !ft_strchr(remaining, '\n')) && bytes_read != 0)
 	{
 		bytes_read = read(fd, read_buffer, BUFFER_SIZE);
 		if (bytes_read < 0)
-			return ();
-
+		{
+			free(remaining);
+			remaining = NULL;
+			return (NULL);
+		}
+		read_buffer[bytes_read] = '\0';
 		remaining = ft_strjoin(remaining, read_buffer);
 	}
-	read_buffer[bytes_read] = '\0';
 	if (remaining == NULL || *remaining == '\0')
 	{
-		return (NULL); // nothing to read
+		free(remaining);
+		remaining = NULL;
+		return (NULL);
 	}
 	return_line = (extract_line(remaining));
 	remaining = update_remaining(remaining);
@@ -111,4 +115,4 @@ char	*get_next_line(int fd)
 // in case file or remaining is empty
 // finds the first \n in remaining, returns string with until and including \n
 // then remove what is returned already from remaining
-	// finds the first '\n' and returns everything after it
+// finds the first '\n' and returns everything after it
