@@ -6,7 +6,7 @@
 /*   By: wcheung <wcheung@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/11/10 11:27:02 by wcheung           #+#    #+#             */
-/*   Updated: 2025/11/15 13:03:37 by wcheung          ###   ########.fr       */
+/*   Updated: 2025/11/15 13:59:22 by wcheung          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,7 +23,7 @@ char	*extract_line(char *remaining)
 	char	*line;
 
 	i = 0;
-	if (!remaining)
+	if (!remaining || !remaining[i])
 		return (NULL);
 	while (remaining[i] && remaining[i] != '\n')
 		i++;
@@ -94,21 +94,33 @@ char	*get_next_line(int fd)
 	while ((!remaining || !ft_strchr(remaining, '\n')) && bytes_read != 0)
 	{
 		bytes_read = read(fd, read_buffer, BUFFER_SIZE);
-		if (bytes_read == 0)
-			break ;
+		// if (bytes_read == 0)
+		// 	break ;
 		if (bytes_read < 0)
-			return (free(remaining), free(read_buffer), remaining = NULL, NULL);
+		{
+			free(remaining);
+			free(read_buffer);
+			return (remaining = NULL, NULL);
+		}
 		read_buffer[bytes_read] = '\0';
 		// printf("%s", read_buffer);
 		temp = ft_strjoin(remaining, read_buffer);
-		free(remaining);
 		if (!temp)
-			return (NULL);
+		{
+		free(read_buffer);
+		free(remaining);
+		return (remaining = NULL, NULL);
+		}
+		free(remaining);
 		remaining = temp;
 		// printf("%s", remaining);
 	}
 	if (!remaining || *remaining == '\0')
-		return (free(remaining), free(read_buffer), remaining = NULL, NULL);
+	{
+		free(remaining);
+		free(read_buffer);
+		return (remaining = NULL, NULL);
+	}
 	return_line = (extract_line(remaining));
 	// printf("%s", return_line);
 	remaining = update_remaining(remaining);

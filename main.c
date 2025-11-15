@@ -6,7 +6,7 @@
 /*   By: wcheung <wcheung@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/11/11 17:17:52 by wcheung           #+#    #+#             */
-/*   Updated: 2025/11/15 12:55:07 by wcheung          ###   ########.fr       */
+/*   Updated: 2025/11/15 13:58:16 by wcheung          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,7 +25,7 @@ int	main(void)
 	}
 	while ((line = get_next_line(fd)) != 0)
 	{
-		printf("%s", line);
+		// printf("%s", line);
 		free(line);
 	}
 	close(fd);
