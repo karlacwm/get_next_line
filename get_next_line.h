@@ -6,7 +6,7 @@
 /*   By: wcheung <wcheung@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/11/10 11:27:04 by wcheung           #+#    #+#             */
-/*   Updated: 2025/11/13 12:07:17 by wcheung          ###   ########.fr       */
+/*   Updated: 2025/11/15 12:09:08 by wcheung          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,7 +25,7 @@
 size_t	ft_strlen(const char *str);
 char	*ft_strchr(const char *str, int c);
 void	*ft_memcpy(void *dst, const void *src, size_t n);
-char	*ft_strjoin(char const *s1, char const *s2);
+char	*ft_strjoin(char *s1, char const *s2);
 char	*get_next_line(int fd);
 
 #endif

@@ -6,7 +6,7 @@
 /*   By: wcheung <wcheung@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/11/11 17:17:52 by wcheung           #+#    #+#             */
-/*   Updated: 2025/11/13 12:58:24 by wcheung          ###   ########.fr       */
+/*   Updated: 2025/11/15 12:55:07 by wcheung          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,8 +23,11 @@ int	main(void)
 		printf("failed\n");
 		return (1);
 	}
-	line = get_next_line(fd);
+	while ((line = get_next_line(fd)) != 0)
+	{
+		printf("%s", line);
+		free(line);
+	}
 	close(fd);
-	printf("the end\n");
 	return (0);
 }

@@ -6,7 +6,7 @@
 /*   By: wcheung <wcheung@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/11/10 11:27:02 by wcheung           #+#    #+#             */
-/*   Updated: 2025/11/13 12:30:08 by wcheung          ###   ########.fr       */
+/*   Updated: 2025/11/15 13:03:37 by wcheung          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -79,38 +79,45 @@ char	*update_remaining(char *remaining)
 
 char	*get_next_line(int fd)
 {
-	static char	*remaining = NULL;
+	static char	*remaining;
 	char		*return_line;
-	char		read_buffer[BUFFER_SIZE + 1];
+	char		*temp;
+	char		*read_buffer;
 	int			bytes_read;
 
 	if (fd < 0 || BUFFER_SIZE <= 0)
+		return (NULL);
+	read_buffer = (char *)malloc(BUFFER_SIZE + 1);
+	if (!read_buffer)
 		return (NULL);
 	bytes_read = 1;
 	while ((!remaining || !ft_strchr(remaining, '\n')) && bytes_read != 0)
 	{
 		bytes_read = read(fd, read_buffer, BUFFER_SIZE);
+		if (bytes_read == 0)
+			break ;
 		if (bytes_read < 0)
-		{
-			free(remaining);
-			remaining = NULL;
-			return (NULL);
-		}
+			return (free(remaining), free(read_buffer), remaining = NULL, NULL);
 		read_buffer[bytes_read] = '\0';
-		remaining = ft_strjoin(remaining, read_buffer);
-	}
-	if (remaining == NULL || *remaining == '\0')
-	{
+		// printf("%s", read_buffer);
+		temp = ft_strjoin(remaining, read_buffer);
 		free(remaining);
-		remaining = NULL;
-		return (NULL);
+		if (!temp)
+			return (NULL);
+		remaining = temp;
+		// printf("%s", remaining);
 	}
+	if (!remaining || *remaining == '\0')
+		return (free(remaining), free(read_buffer), remaining = NULL, NULL);
 	return_line = (extract_line(remaining));
+	// printf("%s", return_line);
 	remaining = update_remaining(remaining);
+	free(read_buffer);
 	return (return_line);
 }
 // loop continues: 1) no new line found in remaining; 2) bytes_read is not 0
-// add new things read to the remaining, join them, free old one, get new remaining
+// add new things read to the remaining, join them, free old one,
+// get new remaining
 // now remaining has a line (or end of file)?
 // in case file or remaining is empty
 // finds the first \n in remaining, returns string with until and including \n
