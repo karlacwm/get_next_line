@@ -6,7 +6,7 @@
 /*   By: wcheung <wcheung@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/11/10 11:27:02 by wcheung           #+#    #+#             */
-/*   Updated: 2025/11/15 13:59:22 by wcheung          ###   ########.fr       */
+/*   Updated: 2025/11/17 17:26:09 by wcheung          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,7 +17,7 @@
 
 #include "get_next_line.h"
 
-char	*extract_line(char *remaining)
+static char	*extract_line(char *remaining)
 {
 	int		i;
 	char	*line;
@@ -36,15 +36,10 @@ char	*extract_line(char *remaining)
 	line[i] = '\0';
 	return (line);
 }
-// find length of line till \n or \0 in remaining
-// malloc space and + 1
-// copy line from remaining into str
-// return str
 
-char	*update_remaining(char *remaining)
+static char	*update_remaining(char *remaining)
 {
 	int		i;
-	int		len_to_copy;
 	char	*updated;
 
 	if (!remaining)
@@ -52,36 +47,20 @@ char	*update_remaining(char *remaining)
 	i = 0;
 	while (remaining[i] && remaining[i] != '\n')
 		i++;
-	if (!remaining[i])
+	if (!remaining[i] || !remaining[i + 1])
 	{
 		free(remaining);
 		return (NULL);
 	}
-	len_to_copy = ft_strlen(remaining) - i - 1;
-	updated = (char *)malloc(sizeof(char) * (len_to_copy + 1));
-	if (!updated)
-	{
-		free(remaining);
-		return (NULL);
-	}
-	ft_memcpy(updated, remaining + i + 1, len_to_copy);
-	updated[len_to_copy] = '\0';
+	updated = ft_strdup(&remaining[i + 1]);
 	free(remaining);
 	return (updated);
 }
-// find \n in remaining
-// free and return NULL when no \n
-// find length after \n
-// malloc space and +1
-// copy from remaining into str
-// free remaining
-// return str
 
 char	*get_next_line(int fd)
 {
-	static char	*remaining;
+	static char	*remaining = NULL;
 	char		*return_line;
-	char		*temp;
 	char		*read_buffer;
 	int			bytes_read;
 
@@ -91,42 +70,48 @@ char	*get_next_line(int fd)
 	if (!read_buffer)
 		return (NULL);
 	bytes_read = 1;
-	while ((!remaining || !ft_strchr(remaining, '\n')) && bytes_read != 0)
+	while ((!remaining || !ft_strchr(remaining, '\n')) && bytes_read > 0)
 	{
 		bytes_read = read(fd, read_buffer, BUFFER_SIZE);
-		// if (bytes_read == 0)
-		// 	break ;
 		if (bytes_read < 0)
 		{
-			free(remaining);
 			free(read_buffer);
-			return (remaining = NULL, NULL);
+			free(remaining);
+			remaining = NULL;
+			return (NULL);
 		}
 		read_buffer[bytes_read] = '\0';
-		// printf("%s", read_buffer);
-		temp = ft_strjoin(remaining, read_buffer);
-		if (!temp)
+		remaining = ft_strjoin(remaining, read_buffer);
+		if (!remaining)
 		{
-		free(read_buffer);
-		free(remaining);
-		return (remaining = NULL, NULL);
+			free(read_buffer);
+			return (NULL);
 		}
-		free(remaining);
-		remaining = temp;
-		// printf("%s", remaining);
 	}
-	if (!remaining || *remaining == '\0')
+	free(read_buffer);
+	if (!remaining || remaining[0] == '\0')
 	{
 		free(remaining);
-		free(read_buffer);
-		return (remaining = NULL, NULL);
+		remaining = NULL;
+		return (NULL);
 	}
 	return_line = (extract_line(remaining));
-	// printf("%s", return_line);
 	remaining = update_remaining(remaining);
-	free(read_buffer);
 	return (return_line);
 }
+// find length of line till \n or \0 in remaining
+// malloc space and + 1
+// copy line from remaining into str
+// return str
+
+// find \n in remaining
+// free and return NULL when no \n
+// find length after \n
+// malloc space and +1
+// copy from remaining into str
+// free remaining
+// return str
+
 // loop continues: 1) no new line found in remaining; 2) bytes_read is not 0
 // add new things read to the remaining, join them, free old one,
 // get new remaining
