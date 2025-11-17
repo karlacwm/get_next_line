@@ -6,7 +6,7 @@
 /*   By: wcheung <wcheung@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/11/10 11:27:02 by wcheung           #+#    #+#             */
-/*   Updated: 2025/11/17 17:26:09 by wcheung          ###   ########.fr       */
+/*   Updated: 2025/11/17 17:47:09 by wcheung          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -68,16 +68,18 @@ char	*get_next_line(int fd)
 		return (NULL);
 	read_buffer = (char *)malloc(BUFFER_SIZE + 1);
 	if (!read_buffer)
+	{
+		// free(remaining);
 		return (NULL);
+	}
 	bytes_read = 1;
-	while ((!remaining || !ft_strchr(remaining, '\n')) && bytes_read > 0)
+	while ((!ft_strchr(remaining, '\n')) && bytes_read > 0)
 	{
 		bytes_read = read(fd, read_buffer, BUFFER_SIZE);
 		if (bytes_read < 0)
 		{
 			free(read_buffer);
 			free(remaining);
-			remaining = NULL;
 			return (NULL);
 		}
 		read_buffer[bytes_read] = '\0';
@@ -89,13 +91,21 @@ char	*get_next_line(int fd)
 		}
 	}
 	free(read_buffer);
-	if (!remaining || remaining[0] == '\0')
+	if (!remaining)
+		return (NULL);
+	if (remaining[0] == '\0')
 	{
 		free(remaining);
 		remaining = NULL;
 		return (NULL);
 	}
 	return_line = (extract_line(remaining));
+	if (!return_line)
+	{
+		free(remaining);
+		remaining = NULL;
+		return (NULL);
+	}
 	remaining = update_remaining(remaining);
 	return (return_line);
 }
