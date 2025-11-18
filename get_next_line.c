@@ -6,7 +6,7 @@
 /*   By: wcheung <wcheung@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/11/10 11:27:02 by wcheung           #+#    #+#             */
-/*   Updated: 2025/11/17 17:47:09 by wcheung          ###   ########.fr       */
+/*   Updated: 2025/11/18 09:00:38 by wcheung          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -57,40 +57,51 @@ static char	*update_remaining(char *remaining)
 	return (updated);
 }
 
+static char	*read_n_join(int fd, char *remaining, char	*read_buffer)
+{
+	int	bytes_read;
+
+	bytes_read = 1;
+	while (bytes_read > 0 && (!ft_strchr(remaining, '\n')))
+	{
+		bytes_read = read(fd, read_buffer, BUFFER_SIZE);
+		if (bytes_read < 0)
+			return (NULL);
+		read_buffer[bytes_read] = '\0';
+		remaining = ft_strjoin(remaining, read_buffer);
+		if (!remaining)
+			return (NULL);
+	}
+	return (remaining);
+}
+
+static char	*get_remaining(int fd, char *remaining)
+{
+	char	*read_buffer;
+	// int		bytes_read;
+
+	read_buffer = (char *)malloc(BUFFER_SIZE + 1);
+	if (!read_buffer)
+	{
+		free(remaining);
+		remaining = NULL;
+		return (NULL);
+	}
+	// bytes_read = 1;
+	// if (bytes_read != 0)
+	remaining = read_n_join(fd, remaining, read_buffer);
+	free(read_buffer);
+	return (remaining);
+}
+
 char	*get_next_line(int fd)
 {
 	static char	*remaining = NULL;
 	char		*return_line;
-	char		*read_buffer;
-	int			bytes_read;
 
 	if (fd < 0 || BUFFER_SIZE <= 0)
 		return (NULL);
-	read_buffer = (char *)malloc(BUFFER_SIZE + 1);
-	if (!read_buffer)
-	{
-		// free(remaining);
-		return (NULL);
-	}
-	bytes_read = 1;
-	while ((!ft_strchr(remaining, '\n')) && bytes_read > 0)
-	{
-		bytes_read = read(fd, read_buffer, BUFFER_SIZE);
-		if (bytes_read < 0)
-		{
-			free(read_buffer);
-			free(remaining);
-			return (NULL);
-		}
-		read_buffer[bytes_read] = '\0';
-		remaining = ft_strjoin(remaining, read_buffer);
-		if (!remaining)
-		{
-			free(read_buffer);
-			return (NULL);
-		}
-	}
-	free(read_buffer);
+	remaining = get_remaining(fd, remaining);
 	if (!remaining)
 		return (NULL);
 	if (remaining[0] == '\0')
@@ -109,24 +120,58 @@ char	*get_next_line(int fd)
 	remaining = update_remaining(remaining);
 	return (return_line);
 }
-// find length of line till \n or \0 in remaining
-// malloc space and + 1
-// copy line from remaining into str
-// return str
 
-// find \n in remaining
-// free and return NULL when no \n
-// find length after \n
-// malloc space and +1
-// copy from remaining into str
-// free remaining
-// return str
+// char	*get_next_line(int fd)
+// {
+// 	static char	*remaining = NULL;
+// 	char		*return_line;
+// 	char		*read_buffer;
+// 	int			bytes_read;
 
-// loop continues: 1) no new line found in remaining; 2) bytes_read is not 0
-// add new things read to the remaining, join them, free old one,
-// get new remaining
-// now remaining has a line (or end of file)?
-// in case file or remaining is empty
-// finds the first \n in remaining, returns string with until and including \n
-// then remove what is returned already from remaining
-// finds the first '\n' and returns everything after it
+// 	if (fd < 0 || BUFFER_SIZE <= 0)
+// 		return (NULL);
+// 	read_buffer = (char *)malloc(BUFFER_SIZE + 1);
+// 	if (!read_buffer)
+// 	{
+// 		free(remaining);
+// 		remaining = NULL;
+// 		return (NULL);
+// 	}
+// 	bytes_read = 1;
+// 	while ((!ft_strchr(remaining, '\n')) && bytes_read > 0)
+// 	{
+// 		bytes_read = read(fd, read_buffer, BUFFER_SIZE);
+// 		if (bytes_read < 0)
+// 		{
+// 			free(read_buffer);
+// 			free(remaining);
+// 			remaining = NULL;
+// 			return (NULL);
+// 		}
+// 		read_buffer[bytes_read] = '\0';
+// 		remaining = ft_strjoin(remaining, read_buffer);
+// 		if (!remaining)
+// 		{
+// 			free(read_buffer);
+// 			return (NULL);
+// 		}
+// 	}
+// 	free(read_buffer);
+// 	if (!remaining)
+// 		return (NULL);
+// 	if (remaining[0] == '\0')
+// 	{
+// 		free(remaining);
+// 		remaining = NULL;
+// 		return (NULL);
+// 	}
+// 	return_line = (extract_line(remaining));
+// 	if (!return_line)
+// 	{
+// 		free(remaining);
+// 		remaining = NULL;
+// 		return (NULL);
+// 	}
+// 	remaining = update_remaining(remaining);
+// 	return (return_line);
+// }

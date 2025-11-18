@@ -6,7 +6,7 @@
 /*   By: wcheung <wcheung@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/11/10 11:27:00 by wcheung           #+#    #+#             */
-/*   Updated: 2025/11/17 17:20:55 by wcheung          ###   ########.fr       */
+/*   Updated: 2025/11/18 07:45:27 by wcheung          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -68,7 +68,10 @@ char	*ft_strjoin(char *s1, char *s2)
 	s2_len = ft_strlen(s2);
 	str = (char *)malloc(s1_len + s2_len + 1);
 	if (!str)
-		return (free(s1), NULL);
+	{
+		free(s1);
+		return (NULL);
+	}
 	ft_memcpy(str, s1, s1_len);
 	ft_memcpy(str + s1_len, s2, s2_len);
 	str[s1_len + s2_len] = '\0';
