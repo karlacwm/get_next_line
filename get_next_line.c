@@ -6,7 +6,7 @@
 /*   By: wcheung <wcheung@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/11/10 11:27:02 by wcheung           #+#    #+#             */
-/*   Updated: 2025/11/18 09:00:38 by wcheung          ###   ########.fr       */
+/*   Updated: 2025/11/18 09:06:11 by wcheung          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -66,7 +66,10 @@ static char	*read_n_join(int fd, char *remaining, char	*read_buffer)
 	{
 		bytes_read = read(fd, read_buffer, BUFFER_SIZE);
 		if (bytes_read < 0)
+		{
+			free(remaining);
 			return (NULL);
+		}
 		read_buffer[bytes_read] = '\0';
 		remaining = ft_strjoin(remaining, read_buffer);
 		if (!remaining)
@@ -78,7 +81,6 @@ static char	*read_n_join(int fd, char *remaining, char	*read_buffer)
 static char	*get_remaining(int fd, char *remaining)
 {
 	char	*read_buffer;
-	// int		bytes_read;
 
 	read_buffer = (char *)malloc(BUFFER_SIZE + 1);
 	if (!read_buffer)
@@ -87,8 +89,6 @@ static char	*get_remaining(int fd, char *remaining)
 		remaining = NULL;
 		return (NULL);
 	}
-	// bytes_read = 1;
-	// if (bytes_read != 0)
 	remaining = read_n_join(fd, remaining, read_buffer);
 	free(read_buffer);
 	return (remaining);
@@ -96,7 +96,7 @@ static char	*get_remaining(int fd, char *remaining)
 
 char	*get_next_line(int fd)
 {
-	static char	*remaining = NULL;
+	static char	*remaining;
 	char		*return_line;
 
 	if (fd < 0 || BUFFER_SIZE <= 0)
