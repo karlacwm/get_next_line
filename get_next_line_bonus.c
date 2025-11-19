@@ -6,7 +6,7 @@
 /*   By: wcheung <wcheung@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/11/10 11:27:02 by wcheung           #+#    #+#             */
-/*   Updated: 2025/11/18 09:49:39 by wcheung          ###   ########.fr       */
+/*   Updated: 2025/11/19 07:50:18 by wcheung          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -91,82 +91,27 @@ static char	*get_remaining(int fd, char *remaining)
 
 char	*get_next_line(int fd)
 {
-	static char	*remaining;
+	static char	*remaining[FD_MAX];
 	char		*return_line;
 
-	if (fd < 0 || BUFFER_SIZE <= 0)
+	if (fd < 0 || BUFFER_SIZE <= 0 || fd >= FD_MAX)
 		return (NULL);
-	remaining = get_remaining(fd, remaining);
-	if (!remaining)
+	remaining[fd] = get_remaining(fd, remaining[fd]);
+	if (!remaining[fd])
 		return (NULL);
-	if (remaining[0] == '\0')
+	if (remaining[fd][0] == '\0')
 	{
-		free(remaining);
-		remaining = NULL;
+		free(remaining[fd]);
+		remaining[fd] = NULL;
 		return (NULL);
 	}
-	return_line = (extract_line(remaining));
+	return_line = (extract_line(remaining[fd]));
 	if (!return_line)
 	{
-		free(remaining);
-		remaining = NULL;
+		free(remaining[fd]);
+		remaining[fd] = NULL;
 		return (NULL);
 	}
-	remaining = update_remaining(remaining);
+	remaining[fd] = update_remaining(remaining[fd]);
 	return (return_line);
 }
-
-// char	*get_next_line(int fd)
-// {
-// 	static char	*remaining = NULL;
-// 	char		*return_line;
-// 	char		*read_buffer;
-// 	int			bytes_read;
-
-// 	if (fd < 0 || BUFFER_SIZE <= 0)
-// 		return (NULL);
-// 	read_buffer = (char *)malloc(BUFFER_SIZE + 1);
-// 	if (!read_buffer)
-// 	{
-// 		free(remaining);
-// 		remaining = NULL;
-// 		return (NULL);
-// 	}
-// 	bytes_read = 1;
-// 	while ((!ft_strchr(remaining, '\n')) && bytes_read > 0)
-// 	{
-// 		bytes_read = read(fd, read_buffer, BUFFER_SIZE);
-// 		if (bytes_read < 0)
-// 		{
-// 			free(read_buffer);
-// 			free(remaining);
-// 			remaining = NULL;
-// 			return (NULL);
-// 		}
-// 		read_buffer[bytes_read] = '\0';
-// 		remaining = ft_strjoin(remaining, read_buffer);
-// 		if (!remaining)
-// 		{
-// 			free(read_buffer);
-// 			return (NULL);
-// 		}
-// 	}
-// 	free(read_buffer);
-// 	if (!remaining)
-// 		return (NULL);
-// 	if (remaining[0] == '\0')
-// 	{
-// 		free(remaining);
-// 		remaining = NULL;
-// 		return (NULL);
-// 	}
-// 	return_line = (extract_line(remaining));
-// 	if (!return_line)
-// 	{
-// 		free(remaining);
-// 		remaining = NULL;
-// 		return (NULL);
-// 	}
-// 	remaining = update_remaining(remaining);
-// 	return (return_line);
-// }

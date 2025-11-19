@@ -6,7 +6,7 @@
 /*   By: wcheung <wcheung@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/11/10 11:27:04 by wcheung           #+#    #+#             */
-/*   Updated: 2025/11/18 09:39:52 by wcheung          ###   ########.fr       */
+/*   Updated: 2025/11/19 07:47:54 by wcheung          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,6 +15,10 @@
 
 # ifndef BUFFER_SIZE
 #  define BUFFER_SIZE 42
+# endif
+
+# ifndef FD_MAX
+#  define FD_MAX 4096
 # endif
 
 # include <fcntl.h>
